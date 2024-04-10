@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerece</title>
+    <link rel="stylesheet " href="style.css">
+    <script>
+
+    function addProduct() {
+    
+        var productName = document.getElementById('productName').value;
+        var productPrice = document.getElementById('productPrice').value;
+        var productImage = document.getElementById('productImage').files[0];
+
+        if (productName && productPrice && productImage) {
+            
+            var newProduct = document.createElement('div');
+            newProduct.className = 'product';
+            newProduct.setAttribute('data-name', productName);
+            newProduct.setAttribute('data-price', productPrice);
+
+            var h3 = document.createElement('h3');
+            h3.textContent = productName;
+
+            var img = document.createElement('img');
+            img.src = URL.createObjectURL(productImage);
+            img.alt = productName;
+
+            var p = document.createElement('p');
+            p.textContent = 'Price: $' + productPrice;
+
+            var button = document.createElement('button');
+            button.textContent = 'Add to Cart';
+            button.onclick = function () {
+                addToCart(productName, productPrice, productName);
+            };
+            newProduct.appendChild(h3);
+            newProduct.appendChild(img);
+            newProduct.appendChild(p);
+            newProduct.appendChild(button);
+
+            
+            var productsContainer = document.getElementById('products');
+            productsContainer.appendChild(newProduct);
+            document.getElementById('productName').value = '';
+            document.getElementById('productPrice').value = '';
+            document.getElementById('productImage').value = '';
+        } else {
+            alert('Please fill in all fields.');
+        }
+    }
+
+
+    </script>
+    
+</head>
+<body>
+    
+    <section id="header">
+        <a href="#"> <img src="image/logo.png" class="logo"> </a>
+        <div class="head">
+            <h1>Home Store</h1>
+            <p>Symbol of Status....</p>
+        </div>
+        <div>
+            <ul id="navbar">
+                <li><a class="active" href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="storage.html">Storage</a></li>
+                <li><a href="cart.html">Cart</a></li>
+
+            </ul>
+            
+            <div id="search-bar">
+                <input type="text" id="search-input" placeholder="Search products...">
+                <button onclick="searchProducts()">Search</button>
+            </div>
+        </div>
+          </section>
+          <section id="product1" class="pro-container">
+            <h2>Home Store Products</h2>
+            <p>New Collection New Modern Design</p>
+            <div id="products" class="products">
+                <div class="product" data-name="Marvelous Bed" data-price="2000.00" data-tag="MarvelousBed">
+                    <h3>Marvelous Bed</h3>
+                    <img src="image/product1.jpg" alt="Marvelous Bed">
+                    <p>Price: $2000.00</p>                 
+                    <button onclick="addToCart('Marvelous Bed', 2000.00, 'MarvelousBed')">Add to Cart</button>
+                </div>
+                <div class="product" data-name="Dressing Table" data-price="2500.00" data-tag="DressingTable">
+                    <h3>Dressing Table</h3>
+                    <img src="image/product2.jpg" alt="Dressing Table">
+                    <p>Price: $2500.00</p>
+                    <button onclick="addToCart('Dressing Table', 2500.00, 'DressingTable')">Add to Cart</button>
+                </div>
+                <div class="product" data-name="Reading Table" data-price="3500.00" data-tag="ReadingTable">
+                    <h3>Reading Table</h3>
+                    <img src="image/product3.jpg" alt="Reading Table">
+                    <p>Price: $3500.00</p>
+                    <button onclick="addToCart('Reading Table', 3500.00, 'ReadingTable')">Add to Cart</button>
+                </div>
+                <div class="product" data-name="Everest bed" data-price="5000.00" data-tag="Everestbed">
+                    <h3>Everest bed</h3>
+                    <img src="image/product4.jpg" alt="Everest bed">
+                    <p>Price: $5000.00</p>
+                    <button onclick="addToCart('Everest bed', 5000.00, 'Everestbed')">Add to Cart</button>
+                </div>
+                <div class="product" data-name="Daining Table" data-price="8000.00" data-tag="DainingTable">
+                    <h3>Daining Table</h3>
+                    <img src="image/product5.jpg" alt="Daining Table">
+                    <p>Price: $8000.00</p>
+                    <button onclick="addToCart('Daining Table', 8000.00, 'DainingTable')">Add to Cart</button>
+                </div>
+                <div class="product" data-name="Premium Sofa set" data-price="10000.00" data-tag="PremiumSofaset">
+                    <h3>Premium Sofa set</h3>
+                    <img src="image/product6.jpg" alt="Premium Sofa set">
+                    <p>Price: $10000.00</p>
+                    <button onclick="addToCart('Premium Sofa set', 10000.00, 'PremiumSofaset')">Add to Cart</button>
+                </div>
+                <div class="product" data-name="c" data-price="15000.00" data-tag="LaxariousSofa">
+                    <h3>Laxarious Sofa</h3>
+                    <img src="image/product7.jpg" alt="Laxarious Sofa">
+                    <p>Price: $15000.00</p>
+                    <button onclick="addToCart('Laxarious Sofa', 15000.00, 'LaxariousSofa')">Add to Cart</button>
+                </div>
+                <div class="product" data-name="CEO Chair" data-price="25000.00" data-tag="CEOChair">
+                    <h3>CEO Chair</h3>
+                    <img src="image/product8.jpeg" alt="CEO Chair">
+                    <p>Price: $25000.00</p>
+                    <button onclick="addToCart('CEO Chair', 25000.00, 'CEOChair')">Add to Cart</button>
+                </div>
+            </div>
+        </section>
+           
+          </section>
+ <section id="add-product-page" class="section-p1">
+    <h2 style="text-align: center; font-size: 56px; margin-bottom: 20px;color: red;">Add Product</h2>
+    <form id="add-product-form">
+        <label for="productName">Product Name:</label>
+        <input type="text" id="productName" required>
+
+        <label for="productPrice">Product Price:</label>
+        <input type="number" id="productPrice" step="0.01" required>
+
+        <label for="productImage">Product Image:</label>
+        <input type="file" id="productImage" accept="image/*" required>
+
+        <button type="button" onclick="addProduct()">Add Product</button>
+    </form>
+</section>
+
+
+            <footer class="section-p1">
+                <div class="col">
+                    <img class="logo" src="image/logo.png">
+                    <h4>Contact</h4>
+                    <p>
+                        <strong>Address :</strong> 5425-kazi Nazrul avenue,Dhaka
+                    </p>
+                    <p>
+                        <strong>Phone :</strong> 01478548565,6+4556876+5
+                    </p>
+                    <p>
+                        <strong>Hours :</strong>10 am to 9pm.
+                    </p>
+                </div>
+
+                <div class="col">
+                    <h4>About</h4>
+                    <a href="about.html">About Us</a>
+                    <a href="#">Delivary Partner</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms & Condition</a>
+                    <a href="contact.html">Contact Us</a>
+                </div>
+
+                <div class="col">
+                    <h4>My Account</h4>
+                    <a href="#">Sign In</a>
+                    <a href="#">View Cart</a>
+                    <a href="#">Help</a>  
+                </div >
+
+                <div class=colpay>
+                <h4>Secured Payment</h4>
+                <img src="image/pay.jpg">
+                </div>
+                <div class="copyright">
+                    <p> &copy 2023,homestoreltd</p>
+                </div>
+            </footer>
+    
+          </section>
+          <script src="script.js"></script>
+</body>
+</html>

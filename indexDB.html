@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IndexedDB CRUD</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            background-image: url("image/bg1.webp");
+            background-size: cover;
+        }
+
+        .container {
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        #save {
+            margin-left: 30%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <ul> <li style="list-style:none; text-align:left;"><a id="btn" href="storage.html"><h2 >Back</h2></a> </li></ul>
+        <h1 style="color: chocolate; font-size: 72px;">IndexedDB </h1>
+        <form id="crud-form">
+            <input type="hidden" id="id" />
+            <label for="fname">First Name:</label>
+            <input type="text" id="fname" placeholder="First Name" required>
+            <label for="lname">Last Name:</label>
+            <input type="text" id="lname" placeholder="Last Name" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="Email" required>
+            <label for="desig">Designation:</label>
+            <select id="desig" name="desig">
+                <option>Managing Director</option>
+                <option>Manager</option>
+                <option>Asst. Manager-Sales</option>
+                <option>Asst. Manager-Purchase</option>
+                <option>Trainee Officer</option>
+                <option>Junior Trainee Officer</option>
+                <option>Accountant</option>
+            </select>
+            <label for="salary">Salary:</label>
+            <input type="number" id="salary" required>
+            <button type="button" id="save">Save</button>
+        </form>
+        <div id="task-list">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Designation</th>
+                        <th>Salary</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const dbName = 'myDatabase';
+            const dbVersion = 1;
+            const storeName = 'users';
+
+            let db;
+
+            const request = indexedDB.open(dbName, dbVersion);
+
+            request.onerror = function (event) {
+                console.error('Database error:', event.target.errorCode);
+            };
+
+            request.onsuccess = function (event) {
+                db = event.target.result;
+                if (db) {
+                    displayUsers();
+                } else {
+                    console.error('Database not initialized.');
+                }
+            };
+
+            request.onupgradeneeded = function (event) {
+                db = event.target.result;
+
+                if (!db.objectStoreNames.contains(storeName)) {
+                    const store = db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
+
+                    store.createIndex('fname', 'fname', { unique: false });
+                    store.createIndex('lname', 'lname', { unique: false });
+                    store.createIndex('email', 'email', { unique: false });
+                    store.createIndex('desig', 'desig', { unique: false });
+                    store.createIndex('salary', 'salary', { unique: false });
+                }
+            };
+            document.getElementById('save').addEventListener('click', function () {
+                const id = parseInt(document.getElementById('id').value);
+                const fname = document.getElementById('fname').value;
+                const lname = document.getElementById('lname').value;
+                const email = document.getElementById('email').value;
+                const desig = document.getElementById('desig').value;
+                const salary = document.getElementById('salary').value;
+
+                if (fname && lname && email && desig && salary) {
+                    if (id) {
+                        updateUser({ id, fname, lname, email, desig, salary });
+                    } else {
+                        saveUser({ fname, lname, email, desig, salary });
+                    }
+                } else {
+                    alert('Please fill in all fields.');
+                }
+            });
+
+            function saveUser(user) {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+
+                const request = store.add(user);
+
+                request.onsuccess = function () {
+                    alert('Information saved successfully.');
+                    displayUsers();
+                    clearForm();
+                };
+
+                request.onerror = function (event) {
+                    console.error('Error saving user:', event.target.error);
+                };
+            }
+
+            function updateUser(user) {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+
+                const request = store.put(user);
+
+                request.onsuccess = function () {
+                    alert(' Information Updated successfully.');
+                    displayUsers();
+                    clearForm();
+                };
+
+                request.onerror = function (event) {
+                    console.error('Error updating user:', event.target.error);
+                };
+            }
+
+            function displayUsers() {
+                const transaction = db.transaction([storeName], 'readonly');
+                const store = transaction.objectStore(storeName);
+                const tbody = document.querySelector('#task-list tbody');
+
+                tbody.innerHTML = '';
+
+                const request = store.openCursor();
+
+                request.onsuccess = function (event) {
+                    const cursor = event.target.result;
+
+                    if (cursor) {
+                    
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${cursor.value.id}</td>
+                                        <td>${cursor.value.fname}</td>
+                                        <td>${cursor.value.lname}</td>
+                                        <td>${cursor.value.email}</td>
+                                        <td>${cursor.value.desig}</td>
+                                        <td>${cursor.value.salary}</td>
+                                        <td>
+                                            <button type="button" data-id="${cursor.value.id}" class="edit-btn">Edit</button>
+                                            <button type="button" data-id="${cursor.value.id}" class="delete-btn">Delete</button>
+                                        </td>`;
+
+                        tbody.appendChild(tr);
+                        cursor.continue();
+                    } else {
+                        console.log('No more users.');
+                    }
+                };
+            }
+
+            function clearForm() {
+                document.getElementById('id').value = '';
+                document.getElementById('fname').value = '';
+                document.getElementById('lname').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('desig').value = '';
+                document.getElementById('salary').value = '';
+            }
+
+            document.querySelector('#task-list tbody').addEventListener('click', function (event) {
+                if (event.target.classList.contains('delete-btn')) {
+                    const userId = Number(event.target.dataset.id);
+                    deleteUser(userId);
+                } else if (event.target.classList.contains('edit-btn')) {
+                    const userId = Number(event.target.dataset.id);
+                    editUser(userId);
+                }
+            });
+
+            function deleteUser(userId) {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+
+                const deleteRequest = store.delete(userId);
+
+                deleteRequest.onsuccess = function () {
+                    alert('Deleted Sucessfully.');
+                    displayUsers();
+                };
+            }
+
+            function editUser(userId) {
+                const transaction = db.transaction([storeName], 'readonly');
+                const store = transaction.objectStore(storeName);
+
+                const getRequest = store.get(userId);
+
+                getRequest.onsuccess = function (event) {
+                    const user = event.target.result;
+
+                    if (user) {
+                        document.getElementById('id').value = user.id;
+                        document.getElementById('fname').value = user.fname;
+                        document.getElementById('lname').value = user.lname;
+                        document.getElementById('email').value = user.email;
+                        document.getElementById('desig').value = user.desig;
+                        document.getElementById('salary').value = user.salary;
+                        alert(' Make changes and click "Save".');
+                    } else {
+                        console.error('User not found.');
+                    }
+                };
+            }
+        });
+    </script>
+</body>
+</html>
